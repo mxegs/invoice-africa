@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>InvoiceAfrica - Free Professional Invoicing</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-primary { background: linear-gradient(135deg, #2563eb, #7c3aed); transition: all 0.2s; }
+        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 10px 30px rgba(37,99,235,0.3); }
+        .status-paid { background: #10b981; }
+        .status-pending { background: #f59e0b; }
+        .status-draft { background: #6b7280; }
+        .ad-container { min-height: 90px; background: rgba(255,255,255,0.03); border-radius: 8px; margin: 20px 0; display: flex; align-items: center; justify-content: center; color: #94a3b8; border: 1px dashed #334155; }
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body class="text-white min-h-screen p-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header with AdSense Space -->
+        <header class="glass rounded-2xl p-4 mb-6 no-print">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">InvoiceAfrica</h1>
+                    <p class="text-sm text-slate-400">Free invoicing for African businesses</p>
+                </div>
+                <button onclick="showCreateModal()" class="btn-primary px-4 py-2 rounded-lg font-medium flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    New Invoice
+                </button>
+            </div>
+        </header>
+
+        <!-- Top Ad Banner - Premium Position -->
+        <div class="ad-container no-print mb-6" id="ad-top">
+            <!-- AdSense Code Will Go Here -->
+            <span class="text-sm">Advertisement Space - Your Ad Here</span>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 no-print">
+            <div class="glass rounded-xl p-4">
+                <p class="text-slate-400 text-sm">Total Invoices</p>
+                <p id="stat-total" class="text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="glass rounded-xl p-4">
+                <p class="text-slate-400 text-sm">Paid</p>
+                <p id="stat-paid" class="text-2xl font-bold text-emerald-400">0</p>
+            </div>
+            <div class="glass rounded-xl p-4">
+                <p class="text-slate-400 text-sm">Pending</p>
+                <p id="stat-pending" class="text-2xl font-bold text-amber-400">0</p>
+            </div>
+            <div class="glass rounded-xl p-4">
+                <p class="text-slate-400 text-sm">Revenue</p>
+                <p id="stat-revenue" class="text-2xl font-bold text-blue-400">R0</p>
+            </div>
+        </div>
+
+        <!-- Middle Ad - In-Content -->
+        <div class="ad-container no-print mb-6" id="ad-middle">
+            <!-- AdSense Code Will Go Here -->
+            <span class="text-sm">Advertisement Space - Your Ad Here</span>
+        </div>
+
+        <!-- Invoice List -->
+        <div id="invoice-list" class="space-y-4 mb-6 no-print"></div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="text-center py-12 no-print">
+            <div class="glass rounded-2xl p-12 max-w-md mx-auto">
+                <div class="w-20 h-20 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">No invoices yet</h3>
+                <p class="text-slate-400 mb-6">Create your first invoice to get started</p>
+                <button onclick="showCreateModal()" class="btn-primary px-6 py-3 rounded-lg font-medium">Create First Invoice</button>
+            </div>
+        </div>
+
+        <!-- Bottom Ad -->
+        <div class="ad-container no-print mt-6" id="ad-bottom">
+            <!-- AdSense Code Will Go Here -->
+            <span class="text-sm">Advertisement Space - Your Ad Here</span>
+        </div>
+
+        <!-- Footer with Privacy Policy -->
+        <footer class="text-center text-sm text-slate-500 mt-8 no-print">
+            <p>© 2025 InvoiceAfrica - Free Invoicing for African Businesses</p>
+            <p class="mt-2">
+                <a href="#privacy" onclick="showPrivacyPolicy()" class="text-blue-400 hover:underline">Privacy Policy</a>
+                | <a href="#terms" onclick="showTerms()" class="text-blue-400 hover:underline">Terms of Use</a>
+                | <a href="#contact" onclick="showContact()" class="text-blue-400 hover:underline">Contact</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Create/Edit Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 no-print">
+        <div class="bg-slate-900 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-auto">
+            <div class="p-6 border-b border-white/10 flex justify-between">
+                <h2 id="modal-title" class="text-xl font-bold">Create Invoice</h2>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white">✕</button>
+            </div>
+            <div class="p-6">
+                <form id="invoice-form" onsubmit="handleSubmit(event)">
+                    <input type="hidden" id="edit-id">
+                    
+                    <div class="grid gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm mb-1">Client Name *</label>
+                            <input type="text" id="client-name" required class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm mb-1">Client Email</label>
+                                <input type="email" id="client-email" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-1">Invoice Number</label>
+                                <input type="text" id="invoice-number" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm mb-1">Issue Date</label>
+                                <input type="date" id="issue-date" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-1">Due Date</label>
+                                <input type="date" id="due-date" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm mb-2">Line Items</label>
+                            <div id="line-items" class="space-y-2"></div>
+                            <button type="button" onclick="addLineItem()" class="mt-2 text-blue-400 text-sm">+ Add Item</button>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm mb-1">Tax Rate (%)</label>
+                                <input type="number" id="tax-rate" value="0" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-1">Status</label>
+                                <select id="status" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+                                    <option value="draft">Draft</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="paid">Paid</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-1">Total</label>
+                                <div id="display-total" class="text-2xl font-bold text-blue-400">R0.00</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm mb-1">Notes</label>
+                            <textarea id="notes" rows="2" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 justify-end">
+                        <button type="button" onclick="closeModal()" class="px-6 py-2 bg-white/10 rounded-lg">Cancel</button>
+                        <button type="submit" class="btn-primary px-6 py-2 rounded-lg">Save Invoice</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Invoice Modal -->
+    <div id="view-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-auto text-slate-800">
+            <div class="p-6 border-b flex justify-between">
+                <h2 class="text-xl font-bold">Invoice Preview</h2>
+                <div class="flex gap-2">
+                    <button onclick="printInvoice()" class="px-4 py-2 bg-slate-100 rounded-lg">Print</button>
+                    <button onclick="closeViewModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+                </div>
+            </div>
+            <div id="invoice-preview" class="p-6"></div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacy-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-auto text-slate-800 p-8">
+            <h2 class="text-2xl font-bold mb-4">Privacy Policy</h2>
+            <div class="space-y-4 text-sm">
+                <p><strong>Last updated: March 2025</strong></p>
+                <p>InvoiceAfrica ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we handle your information.</p>
+                
+                <h3 class="font-semibold">1. Information We Collect</h3>
+                <p>We do NOT collect or store any personal data on our servers. All invoice data is stored locally in your browser using localStorage. This means:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Your invoices never leave your device</li>
+                    <li>We cannot access your client information</li>
+                    <li>You are responsible for backing up your data</li>
+                </ul>
+
+                <h3 class="font-semibold">2. Google AdSense</h3>
+                <p>We use Google AdSense to display advertisements. Google may use cookies to serve ads based on your visits. Learn more at <a href="https://policies.google.com/technologies/ads" class="text-blue-600" target="_blank">Google's Advertising Policy</a>.</p>
+
+                <h3 class="font-semibold">3. Your Rights</h3>
+                <p>You can clear all your data at any time by clearing your browser's localStorage/cache.</p>
+
+                <h3 class="font-semibold">4. Contact</h3>
+                <p>Questions? Email us at privacy@invoiceafrica.com</p>
+            </div>
+            <button onclick="closePrivacyModal()" class="mt-6 btn-primary text-white px-6 py-2 rounded-lg w-full">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+        let editingId = null;
+        let lineItemCount = 0;
+
+        // Initialize
+        renderInvoiceList();
+        updateStats();
+
+        // Line Items
+        function addLineItem(desc = '', qty = 1, price = 0) {
+            const container = document.getElementById('line-items');
+            const id = lineItemCount++;
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-12 gap-2 items-center';
+            div.dataset.id = id;
+            div.innerHTML = `
+                <div class="col-span-5"><input type="text" value="${desc}" class="line-desc w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-sm"></div>
+                <div class="col-span-2"><input type="number" value="${qty}" class="line-qty w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-sm text-center" onchange="calculateTotals()"></div>
+                <div class="col-span-3"><input type="number" value="${price}" class="line-price w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-sm" onchange="calculateTotals()"></div>
+                <div class="col-span-2 flex items-center gap-1">
+                    <span class="line-total text-sm">R${(qty * price).toFixed(2)}</span>
+                    <button onclick="removeLineItem(${id})" class="text-red-400 text-xl">×</button>
+                </div>
+            `;
+            container.appendChild(div);
+            calculateTotals();
+        }
+
+        function removeLineItem(id) {
+            const item = document.querySelector(`[data-id="${id}"]`);
+            if (item) item.remove();
+            calculateTotals();
+        }
+
+        function getLineItems() {
+            const items = [];
+            document.querySelectorAll('#line-items > div').forEach(div => {
+                items.push({
+                    description: div.querySelector('.line-desc')?.value || '',
+                    quantity: parseFloat(div.querySelector('.line-qty')?.value) || 0,
+                    price: parseFloat(div.querySelector('.line-price')?.value) || 0
+                });
+            });
+            return items.filter(i => i.description || i.quantity || i.price);
+        }
+
+        function calculateTotals() {
+            const items = getLineItems();
+            const taxRate = parseFloat(document.getElementById('tax-rate')?.value) || 0;
+            
+            document.querySelectorAll('#line-items > div').forEach(div => {
+                const qty = parseFloat(div.querySelector('.line-qty')?.value) || 0;
+                const price = parseFloat(div.querySelector('.line-price')?.value) || 0;
+                div.querySelector('.line-total').textContent = `R${(qty * price).toFixed(2)}`;
+            });
+
+            const subtotal = items.reduce((sum, i) => sum + (i.quantity * i.price), 0);
+            const tax = subtotal * (taxRate / 100);
+            const total = subtotal + tax;
+            
+            document.getElementById('display-total').textContent = `R${total.toFixed(2)}`;
+            return { subtotal, tax, total };
+        }
+
+        // Modal functions
+        function showCreateModal() {
+            editingId = null;
+            document.getElementById('modal-title').textContent = 'Create Invoice';
+            document.getElementById('edit-id').value = '';
+            document.getElementById('invoice-form').reset();
+            document.getElementById('line-items').innerHTML = '';
+            lineItemCount = 0;
+            
+            document.getElementById('invoice-number').value = 'INV-' + String(invoices.length + 1).padStart(3, '0');
+            document.getElementById('issue-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('due-date').value = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+            
+            addLineItem();
+            document.getElementById('modal').classList.add('flex');
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('modal').classList.remove('flex');
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+            const items = getLineItems();
+            const { subtotal, tax, total } = calculateTotals();
+            const taxRate = parseFloat(document.getElementById('tax-rate').value) || 0;
+
+            const invoice = {
+                id: editingId || Date.now().toString(),
+                number: document.getElementById('invoice-number').value,
+                client: document.getElementById('client-name').value,
+                email: document.getElementById('client-email').value,
+                issueDate: document.getElementById('issue-date').value,
+                dueDate: document.getElementById('due-date').value,
+                items: items,
+                taxRate: taxRate,
+                tax: tax,
+                subtotal: subtotal,
+                total: total,
+                status: document.getElementById('status').value,
+                notes: document.getElementById('notes').value,
+                createdAt: new Date().toISOString()
+            };
+
+            if (editingId) {
+                const index = invoices.findIndex(i => i.id === editingId);
+                if (index !== -1) invoices[index] = invoice;
+            } else {
+                invoices.push(invoice);
+            }
+
+            localStorage.setItem('invoices', JSON.stringify(invoices));
+            closeModal();
+            renderInvoiceList();
+            updateStats();
+        }
+
+        function editInvoice(id) {
+            const invoice = invoices.find(i => i.id === id);
+            if (!invoice) return;
+
+            editingId = id;
+            document.getElementById('modal-title').textContent = 'Edit Invoice';
+            document.getElementById('edit-id').value = id;
+            document.getElementById('client-name').value = invoice.client || '';
+            document.getElementById('client-email').value = invoice.email || '';
+            document.getElementById('invoice-number').value = invoice.number || '';
+            document.getElementById('issue-date').value = invoice.issueDate || '';
+            document.getElementById('due-date').value = invoice.dueDate || '';
+            document.getElementById('tax-rate').value = invoice.taxRate || 0;
+            document.getElementById('status').value = invoice.status || 'draft';
+            document.getElementById('notes').value = invoice.notes || '';
+
+            document.getElementById('line-items').innerHTML = '';
+            lineItemCount = 0;
+            if (invoice.items && invoice.items.length) {
+                invoice.items.forEach(i => addLineItem(i.description, i.quantity, i.price));
+            } else {
+                addLineItem();
+            }
+
+            document.getElementById('modal').classList.add('flex');
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function deleteInvoice(id) {
+            if (confirm('Delete this invoice?')) {
+                invoices = invoices.filter(i => i.id !== id);
+                localStorage.setItem('invoices', JSON.stringify(invoices));
+                renderInvoiceList();
+                updateStats();
+            }
+        }
+
+        function viewInvoice(id) {
+            const invoice = invoices.find(i => i.id === id);
+            if (!invoice) return;
+
+            const preview = document.getElementById('invoice-preview');
+            preview.innerHTML = `
+                <div class="max-w-2xl mx-auto">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h1 class="text-2xl font-bold">InvoiceAfrica</h1>
+                            <p class="text-sm text-slate-500">${invoice.number}</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-white text-sm status-${invoice.status}">${invoice.status.toUpperCase()}</span>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <p class="text-sm text-slate-500">Bill To:</p>
+                            <p class="font-semibold">${invoice.client}</p>
+                            ${invoice.email ? `<p class="text-sm">${invoice.email}</p>` : ''}
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm">Issue: ${new Date(invoice.issueDate).toLocaleDateString()}</p>
+                            <p class="text-sm">Due: ${new Date(invoice.dueDate).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+
+                    <table class="w-full mb-6">
+                        <thead class="bg-slate-50">
+                            <tr><th class="text-left p-2">Description</th><th class="text-center p-2">Qty</th><th class="text-right p-2">Price</th><th class="text-right p-2">Total</th></tr>
+                        </thead>
+                        <tbody>
+                            ${invoice.items.map(i => `
+                                <tr><td class="p-2">${i.description || '—'}</td><td class="text-center p-2">${i.quantity}</td><td class="text-right p-2">R${i.price.toFixed(2)}</td><td class="text-right p-2">R${(i.quantity * i.price).toFixed(2)}</td></tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <div class="text-right">
+                        <p>Subtotal: R${invoice.subtotal.toFixed(2)}</p>
+                        ${invoice.taxRate > 0 ? `<p>Tax (${invoice.taxRate}%): R${invoice.tax.toFixed(2)}</p>` : ''}
+                        <p class="text-xl font-bold mt-2">Total: R${invoice.total.toFixed(2)}</p>
+                    </div>
+
+                    ${invoice.notes ? `<div class="mt-6 pt-6 border-t"><p class="text-sm text-slate-500">Notes:</p><p>${invoice.notes}</p></div>` : ''}
+                </div>
+            `;
+
+            document.getElementById('view-modal').classList.add('flex');
+            document.getElementById('view-modal').classList.remove('hidden');
+        }
+
+        function closeViewModal() {
+            document.getElementById('view-modal').classList.add('hidden');
+            document.getElementById('view-modal').classList.remove('flex');
+        }
+
+        function printInvoice() {
+            window.print();
+        }
+
+        function renderInvoiceList() {
+            const container = document.getElementById('invoice-list');
+            const emptyState = document.getElementById('empty-state');
+
+            if (invoices.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            container.innerHTML = invoices.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .map(inv => `
+                    <div class="glass rounded-xl p-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-center gap-3 mb-1">
+                                    <span class="font-mono text-blue-400">${inv.number}</span>
+                                    <span class="px-2 py-0.5 rounded-full text-xs text-white status-${inv.status}">${inv.status}</span>
+                                </div>
+                                <h3 class="font-semibold">${inv.client}</h3>
+                                <p class="text-sm text-slate-400">${new Date(inv.issueDate).toLocaleDateString()}</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <p class="text-xl font-bold">R${inv.total.toFixed(2)}</p>
+                                <div class="flex gap-1">
+                                    <button onclick="viewInvoice('${inv.id}')" class="p-2 hover:bg-white/10 rounded">👁️</button>
+                                    <button onclick="editInvoice('${inv.id}')" class="p-2 hover:bg-white/10 rounded">✏️</button>
+                                    <button onclick="deleteInvoice('${inv.id}')" class="p-2 hover:bg-white/10 rounded text-red-400">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').textContent = invoices.length;
+            document.getElementById('stat-paid').textContent = invoices.filter(i => i.status === 'paid').length;
+            document.getElementById('stat-pending').textContent = invoices.filter(i => i.status === 'pending').length;
+            
+            const revenue = invoices.filter(i => i.status === 'paid')
+                .reduce((sum, i) => sum + i.total, 0);
+            document.getElementById('stat-revenue').textContent = `R${revenue.toFixed(2)}`;
+        }
+
+        // Privacy Policy
+        function showPrivacyPolicy() {
+            document.getElementById('privacy-modal').classList.add('flex');
+            document.getElementById('privacy-modal').classList.remove('hidden');
+        }
+
+        function closePrivacyModal() {
+            document.getElementById('privacy-modal').classList.add('hidden');
+            document.getElementById('privacy-modal').classList.remove('flex');
+        }
+
+        function showTerms() {
+            alert('Terms of Use: This is a free tool. Invoices are stored locally. Use at your own risk.');
+        }
+
+        function showContact() {
+            alert('Contact us at: support@invoiceafrica.com');
+        }
+
+        // Initialize with one empty line item when creating
+        document.addEventListener('DOMContentLoaded', () => {
+            // Any initialization needed
+        });
+    </script>
+</body>
+</html>
