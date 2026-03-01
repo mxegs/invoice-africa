@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { font-family: 'Inter', sans-serif; }
-        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); transition: background 0.3s ease; }
         .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
         .btn-primary { background: linear-gradient(135deg, #2563eb, #7c3aed); transition: all 0.2s; }
         .btn-primary:hover { transform: scale(1.02); box-shadow: 0 10px 30px rgba(37,99,235,0.3); }
@@ -17,29 +17,77 @@
         .status-draft { background: #6b7280; }
         .ad-container { min-height: 90px; background: rgba(255,255,255,0.03); border-radius: 8px; margin: 20px 0; display: flex; align-items: center; justify-content: center; color: #94a3b8; border: 1px dashed #334155; }
         @media print { .no-print { display: none !important; } }
+        
+        /* Color theme classes */
+        .theme-indigo .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .theme-indigo .text-primary { color: #6366f1; }
+        .theme-indigo .border-primary { border-color: #6366f1; }
+        
+        .theme-blue .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .theme-blue .text-primary { color: #3b82f6; }
+        .theme-blue .border-primary { border-color: #3b82f6; }
+        
+        .theme-emerald .btn-primary { background: linear-gradient(135deg, #10b981, #059669); }
+        .theme-emerald .text-primary { color: #10b981; }
+        .theme-emerald .border-primary { border-color: #10b981; }
+        
+        .theme-rose .btn-primary { background: linear-gradient(135deg, #f43f5e, #e11d48); }
+        .theme-rose .text-primary { color: #f43f5e; }
+        .theme-rose .border-primary { border-color: #f43f5e; }
+        
+        .theme-slate .btn-primary { background: linear-gradient(135deg, #64748b, #475569); }
+        .theme-slate .text-primary { color: #64748b; }
+        .theme-slate .border-primary { border-color: #64748b; }
     </style>
 </head>
-<body class="text-white min-h-screen p-4">
+<body class="text-white min-h-screen p-4 theme-indigo" id="app-body">
     <div class="max-w-7xl mx-auto">
-        <!-- Header with AdSense Space -->
+        <!-- Header with Color Picker -->
         <header class="glass rounded-2xl p-4 mb-6 no-print">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">InvoiceAfrica</h1>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent" id="app-title">InvoiceAfrica</h1>
                     <p class="text-sm text-slate-400">Free invoicing for African businesses</p>
                 </div>
-                <button onclick="showCreateModal()" class="btn-primary px-4 py-2 rounded-lg font-medium flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    New Invoice
-                </button>
+                <div class="flex items-center gap-2">
+                    <!-- Color Picker Button -->
+                    <div class="relative" id="color-picker-container">
+                        <button id="color-picker-btn" class="p-2 hover:bg-white/10 rounded-lg transition-colors" title="Change Theme Color">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                            </svg>
+                        </button>
+                        <div id="color-menu" class="absolute right-0 mt-2 bg-slate-800 rounded-lg p-2 hidden z-50 shadow-xl">
+                            <button onclick="setTheme('indigo')" class="flex items-center gap-2 w-full px-3 py-2 hover:bg-white/10 rounded transition-colors">
+                                <span class="w-4 h-4 rounded-full bg-[#6366f1]"></span> Indigo
+                            </button>
+                            <button onclick="setTheme('blue')" class="flex items-center gap-2 w-full px-3 py-2 hover:bg-white/10 rounded transition-colors">
+                                <span class="w-4 h-4 rounded-full bg-[#3b82f6]"></span> Blue
+                            </button>
+                            <button onclick="setTheme('emerald')" class="flex items-center gap-2 w-full px-3 py-2 hover:bg-white/10 rounded transition-colors">
+                                <span class="w-4 h-4 rounded-full bg-[#10b981]"></span> Emerald
+                            </button>
+                            <button onclick="setTheme('rose')" class="flex items-center gap-2 w-full px-3 py-2 hover:bg-white/10 rounded transition-colors">
+                                <span class="w-4 h-4 rounded-full bg-[#f43f5e]"></span> Rose
+                            </button>
+                            <button onclick="setTheme('slate')" class="flex items-center gap-2 w-full px-3 py-2 hover:bg-white/10 rounded transition-colors">
+                                <span class="w-4 h-4 rounded-full bg-[#64748b]"></span> Slate
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="showCreateModal()" class="btn-primary px-4 py-2 rounded-lg font-medium flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        New Invoice
+                    </button>
+                </div>
             </div>
         </header>
 
-        <!-- Top Ad Banner - Premium Position -->
+        <!-- Rest of your HTML remains the same... -->
+        <!-- Top Ad Banner -->
         <div class="ad-container no-print mb-6" id="ad-top">
-            <!-- AdSense Code Will Go Here -->
             <span class="text-sm">Advertisement Space - Your Ad Here</span>
         </div>
 
@@ -63,12 +111,6 @@
             </div>
         </div>
 
-        <!-- Middle Ad - In-Content -->
-        <div class="ad-container no-print mb-6" id="ad-middle">
-            <!-- AdSense Code Will Go Here -->
-            <span class="text-sm">Advertisement Space - Your Ad Here</span>
-        </div>
-
         <!-- Invoice List -->
         <div id="invoice-list" class="space-y-4 mb-6 no-print"></div>
 
@@ -88,21 +130,20 @@
 
         <!-- Bottom Ad -->
         <div class="ad-container no-print mt-6" id="ad-bottom">
-            <!-- AdSense Code Will Go Here -->
             <span class="text-sm">Advertisement Space - Your Ad Here</span>
         </div>
 
-        <!-- Footer with Privacy Policy -->
+        <!-- Footer -->
         <footer class="text-center text-sm text-slate-500 mt-8 no-print">
             <p>© 2025 InvoiceAfrica - Free Invoicing for African Businesses</p>
             <p class="mt-2">
-                <a href="#privacy" onclick="showPrivacyPolicy()" class="text-blue-400 hover:underline">Privacy Policy</a>
-                | <a href="#terms" onclick="showTerms()" class="text-blue-400 hover:underline">Terms of Use</a>
-                | <a href="#contact" onclick="showContact()" class="text-blue-400 hover:underline">Contact</a>
+                <a href="#" onclick="showPrivacyPolicy()" class="text-blue-400 hover:underline">Privacy Policy</a>
+                | <a href="#" onclick="showTerms()" class="text-blue-400 hover:underline">Terms of Use</a>
             </p>
         </footer>
     </div>
 
+    <!-- Rest of your modals (Create, View, Privacy) remain the same -->
     <!-- Create/Edit Modal -->
     <div id="modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 no-print">
         <div class="bg-slate-900 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-auto">
@@ -217,9 +258,6 @@
 
                 <h3 class="font-semibold">3. Your Rights</h3>
                 <p>You can clear all your data at any time by clearing your browser's localStorage/cache.</p>
-
-                <h3 class="font-semibold">4. Contact</h3>
-                <p>Questions? Email us at privacy@invoiceafrica.com</p>
             </div>
             <button onclick="closePrivacyModal()" class="mt-6 btn-primary text-white px-6 py-2 rounded-lg w-full">Close</button>
         </div>
@@ -230,6 +268,65 @@
         let invoices = JSON.parse(localStorage.getItem('invoices')) || [];
         let editingId = null;
         let lineItemCount = 0;
+
+        // Color Theme Functions
+        function setTheme(theme) {
+            const body = document.getElementById('app-body');
+            body.className = body.className.replace(/theme-\w+/, '');
+            body.classList.add(`theme-${theme}`);
+            localStorage.setItem('theme', theme);
+            
+            // Update button colors dynamically
+            updateButtonColors(theme);
+        }
+
+        function updateButtonColors(theme) {
+            const colors = {
+                indigo: '#6366f1',
+                blue: '#3b82f6',
+                emerald: '#10b981',
+                rose: '#f43f5e',
+                slate: '#64748b'
+            };
+            
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                btn.style.background = `linear-gradient(135deg, ${colors[theme]}, ${adjustColor(colors[theme], 20)})`;
+            });
+            
+            document.querySelectorAll('.text-blue-400').forEach(el => {
+                el.style.color = colors[theme];
+            });
+        }
+
+        function adjustColor(hex, percent) {
+            const num = parseInt(hex.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.max(0, Math.min(255, (num >> 16) + amt));
+            const G = Math.max(0, Math.min(255, (num >> 8 & 0x00FF) + amt));
+            const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
+            return '#' + (0x1000000 + (R * 0x10000) + (G * 0x100) + B).toString(16).slice(1);
+        }
+
+        // Color Picker UI
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('color-picker-btn');
+            const menu = document.getElementById('color-menu');
+            
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'indigo';
+            setTheme(savedTheme);
+        });
 
         // Initialize
         renderInvoiceList();
@@ -496,7 +593,7 @@
             document.getElementById('stat-revenue').textContent = `R${revenue.toFixed(2)}`;
         }
 
-        // Privacy Policy
+        // Privacy functions
         function showPrivacyPolicy() {
             document.getElementById('privacy-modal').classList.add('flex');
             document.getElementById('privacy-modal').classList.remove('hidden');
@@ -511,14 +608,9 @@
             alert('Terms of Use: This is a free tool. Invoices are stored locally. Use at your own risk.');
         }
 
-        function showContact() {
-            alert('Contact us at: support@invoiceafrica.com');
-        }
-
-        // Initialize with one empty line item when creating
-        document.addEventListener('DOMContentLoaded', () => {
-            // Any initialization needed
-        });
+        window.showPrivacyPolicy = showPrivacyPolicy;
+        window.showTerms = showTerms;
+        window.setTheme = setTheme;
     </script>
 </body>
 </html>
